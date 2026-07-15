@@ -1,0 +1,38 @@
+WEBVTT
+
+1
+00:00:03.000 --> 00:00:12.913
+Atualmente temos 103 pacientes cadastrados. É necessário que o contrato seja assinado antes de prosseguir. Também é possível adicionar um novo paciente.
+
+2
+00:00:16.000 --> 00:00:26.656
+Ao abrir o cadastro, o sistema já sugere a próxima dose automaticamente. Ele também mostra o total pago pelo paciente, com opção de registrar novos pagamentos.
+
+3
+00:00:31.000 --> 00:00:40.681
+É possível iniciar um novo protocolo e também adicionar os dados de bioimpedância. Após isso, a inteligência artificial faz uma análise completa.
+
+4
+00:00:44.000 --> 00:00:54.749
+Essa análise considera como o tratamento foi iniciado e a dosagem atual, mostrando a evolução dos resultados desde a primeira aplicação até o momento presente.
+
+5
+00:00:59.000 --> 00:01:06.545
+O sistema também oferece uma área financeira, com histórico completo de pagamentos que você pode consultar a qualquer momento.
+
+6
+00:01:13.000 --> 00:01:19.848
+No estoque, ele cruza os pacientes com o que foi comprado e calcula automaticamente o saldo disponível.
+
+7
+00:01:24.000 --> 00:01:29.548
+Você também pode configurar a partir de qual quantidade deseja receber um alerta de estoque baixo.
+
+8
+00:01:29.700 --> 00:01:40.774
+Outra funcionalidade importante é o lembrete automático: quando uma dose é agendada, o sistema envia uma mensagem pelo WhatsApp confirmando e relembrando o paciente do retorno.
+
+9
+00:01:40.874 --> 00:01:47.769
+Por fim, o sistema permite importar e exportar planilhas de pacientes, deixando toda a gestão bem completa.
+

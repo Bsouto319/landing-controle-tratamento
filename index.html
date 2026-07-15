@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DoseCerta — Controle de tratamento, estoque e lembrete automático | BTech Solution & Growth</title>
+<meta name="description" content="Sistema que controla dose, estoque e lembrete de aplicação para clínicas de emagrecimento e estética. Chega de papel, planilha e paciente esquecido.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#243b4a; --navy2:#33526a; --ink:#212e3a; --muted:#5b6b78;
+  --paper:#eef1f5; --card:#fff; --line:#dde4ea;
+  --green:#3c6e8f; --gd:#2f5872; --gmsg:#dcf8c6;
+  --blue:#3c6e8f; --bs:#e6edf2; --orange:#b7791f;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Instrument Sans',sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;}
+h1,h2,h3,.syne{font-family:'Bricolage Grotesque',sans-serif;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px;}
+
+header{position:sticky;top:0;z-index:50;background:rgba(238,241,245,.93);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:14px 0;}
+.logo{font-family:'Bricolage Grotesque';font-weight:800;font-size:1rem;color:var(--navy);text-decoration:none;white-space:nowrap;}
+.logo span{color:var(--gd);}
+.nav-links{display:none;gap:24px;}
+@media(min-width:720px){.nav-links{display:flex;align-items:center;}
+.nav-links a{font-size:.9rem;color:var(--muted);text-decoration:none;font-weight:500;transition:color .15s;}
+.nav-links a:hover{color:var(--navy);}}
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#fff;font-weight:700;text-decoration:none;border-radius:999px;padding:11px 20px;font-size:.93rem;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 14px rgba(60,110,143,.3);}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(60,110,143,.42);}
+.btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line);box-shadow:none;}
+.btn-ghost:hover{background:var(--bs);box-shadow:none;}
+
+.hero{padding:56px 0 30px;}
+@media(min-width:880px){.hero{padding:84px 0 50px;}}
+.hero-grid{display:grid;grid-template-columns:1fr;gap:40px;align-items:center;}
+@media(min-width:880px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:60px;}}
+.eyebrow{display:inline-block;background:var(--bs);color:var(--gd);font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:6px 13px;border-radius:999px;margin-bottom:16px;}
+.hero h1{font-size:clamp(2rem,5.2vw,3.05rem);font-weight:800;line-height:1.14;color:var(--navy);letter-spacing:-.015em;}
+.hero h1 em{font-style:normal;color:var(--gd);}
+.hero p{margin-top:16px;font-size:1.1rem;color:var(--muted);max-width:34rem;line-height:1.65;}
+.hero p b{color:var(--ink);}
+.hero-cta{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.hint{margin-top:13px;font-size:.86rem;color:var(--muted);}
+
+.phone{background:linear-gradient(155deg,#0e2b46,#1d4a74);border-radius:28px;padding:13px;box-shadow:0 22px 55px rgba(18,49,78,.28);max-width:380px;margin:0 auto;width:100%;}
+.chat{background:#e5ddd3;border-radius:18px;overflow:hidden;}
+.chat-top{background:#0f5c4d;color:#fff;padding:11px 15px;display:flex;align-items:center;gap:11px;}
+.av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#22b95c,#1aa04e);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Bricolage Grotesque';font-size:1rem;color:#fff;}
+.chat-top .nm{font-weight:700;font-size:.9rem;}.chat-top .st{font-size:.72rem;opacity:.85;}
+.msgs{padding:14px 11px 7px;display:flex;flex-direction:column;gap:7px;min-height:300px;}
+.msg{max-width:82%;padding:8px 12px;border-radius:11px;font-size:.89rem;line-height:1.45;box-shadow:0 1px 1px rgba(0,0,0,.07);opacity:0;transform:translateY(8px);}
+.msg.show{opacity:1;transform:none;transition:opacity .35s ease,transform .35s ease;}
+.msg .t{display:block;font-size:.63rem;color:rgba(0,0,0,.4);text-align:right;margin-top:2px;}
+.in{background:#fff;align-self:flex-start;border-top-left-radius:3px;}
+.out{background:var(--gmsg);align-self:flex-end;border-top-right-radius:3px;}
+.typing{display:none;align-self:flex-end;background:var(--gmsg);border-radius:11px;padding:11px 15px;}
+.typing.show{display:flex;gap:4px;}
+.typing i{width:6px;height:6px;border-radius:50%;background:#6a8a5e;animation:bl 1s infinite;}
+.typing i:nth-child(2){animation-delay:.18s;}.typing i:nth-child(3){animation-delay:.36s;}
+@keyframes bl{0%,80%,100%{opacity:.25;}40%{opacity:1;}}
+.chat-note{background:#fff;border-top:1px solid var(--line);padding:11px 15px;font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;animation:pulse 1.8s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(60,110,143,.5);}50%{box-shadow:0 0 0 7px rgba(60,110,143,0);}}
+
+.vid-sec{padding:48px 0;}
+.browser{margin-top:28px;background:var(--navy);border-radius:18px;overflow:hidden;box-shadow:0 22px 50px rgba(18,49,78,.24);}
+.browser-bar{display:flex;align-items:center;gap:6px;padding:10px 15px;}
+.browser-bar i{width:10px;height:10px;border-radius:50%;background:#3b5a7c;}
+.browser-bar i:first-child{background:#e35d5d;}.browser-bar i:nth-child(2){background:#e8b93c;}.browser-bar i:nth-child(3){background:#37c26e;}
+.browser-bar span{margin-left:7px;font-size:.72rem;color:#9db4c9;font-weight:500;}
+.browser video{display:block;width:100%;height:auto;background:#000;}
+
+section{padding:56px 0;}
+.sec-label{display:inline-block;background:var(--bs);color:var(--navy2);font-weight:700;font-size:.78rem;letter-spacing:.04em;padding:6px 13px;border-radius:999px;margin-bottom:14px;}
+.sec-label.g{background:var(--bs);color:var(--gd);}
+h2{font-size:clamp(1.55rem,4vw,2.2rem);font-weight:800;color:var(--navy);line-height:1.2;letter-spacing:-.01em;}
+.sub{margin-top:10px;color:var(--muted);font-size:1.04rem;max-width:36rem;line-height:1.6;}
+
+.probs{margin-top:32px;display:grid;grid-template-columns:1fr;gap:14px;}
+@media(min-width:700px){.probs{grid-template-columns:1fr 1fr 1fr;}}
+.prob{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;}
+.prob .ico{font-size:2rem;margin-bottom:10px;}
+.prob h3{font-size:1rem;color:var(--navy);margin-bottom:6px;}
+.prob p{font-size:.92rem;color:var(--muted);line-height:1.55;}
+.prob .sol{display:inline-block;margin-top:10px;font-size:.78rem;font-weight:700;color:var(--gd);background:var(--bs);border-radius:999px;padding:4px 11px;}
+
+/* ANTES/DEPOIS */
+.compare{margin-top:34px;display:grid;grid-template-columns:1fr;gap:22px;align-items:stretch;}
+@media(min-width:760px){.compare{grid-template-columns:1fr 1fr;}}
+.cmp-card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;}
+.cmp-tag{padding:12px 16px;font-weight:700;font-size:.85rem;letter-spacing:.02em;}
+.cmp-tag.bad{background:#fdecec;color:#c0392b;}
+.cmp-tag.good{background:var(--bs);color:var(--gd);}
+.cmp-card img{display:block;width:100%;height:280px;object-fit:cover;object-position:top;border-top:1px solid var(--line);}
+.cmp-foot{padding:14px 16px;font-size:.88rem;color:var(--muted);line-height:1.5;}
+
+/* PASSOS */
+.steps{margin-top:30px;}
+.stp{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+.stp:last-child{border-bottom:none;}
+.stp .n{font-family:'Bricolage Grotesque';font-weight:800;color:var(--gd);font-size:1.2rem;background:var(--bs);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.stp h3{font-size:1.05rem;color:var(--navy);margin-bottom:2px;}
+.stp p{color:var(--muted);font-size:.94rem;max-width:36rem;}
+
+/* CASES */
+.cases{margin-top:34px;display:grid;grid-template-columns:1fr;gap:20px;}
+@media(min-width:760px){.cases{grid-template-columns:1fr 1fr;}}
+.case{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;position:relative;overflow:hidden;}
+.case::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--green);}
+.case.blue::before{background:var(--navy2);}
+.case .tag{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gd);margin-bottom:8px;}
+.case.blue .tag{color:var(--navy2);}
+.case h3{font-size:1.2rem;color:var(--navy);margin-bottom:8px;}
+.case .desc{font-size:.95rem;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.case ul{list-style:none;}
+.case li{padding:5px 0 5px 24px;position:relative;font-size:.92rem;color:var(--ink);}
+.case li::before{content:'✓';position:absolute;left:0;color:var(--gd);font-weight:800;}
+.case.blue li::before{color:var(--navy2);}
+.case .status{margin-top:14px;font-size:.78rem;font-weight:700;color:var(--gd);background:var(--bs);border-radius:999px;padding:5px 12px;display:inline-block;}
+.case.blue .status{color:var(--navy2);background:var(--bs);}
+
+/* SHOTS */
+.shots{margin-top:34px;display:grid;grid-template-columns:1fr;gap:32px;justify-items:center;}
+@media(min-width:760px){.shots{grid-template-columns:1fr 1fr;}}
+.mini-cap{text-align:center;color:var(--muted);font-size:.76rem;padding:9px 6px 2px;line-height:1.5;}
+
+/* FAQ */
+.faq{margin-top:30px;}
+.qa{border-bottom:1px solid var(--line);padding:18px 0;}
+.qa summary{cursor:pointer;font-weight:700;color:var(--navy);font-size:1.02rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.qa summary::-webkit-details-marker{display:none;}
+.qa summary::after{content:'+';font-size:1.4rem;color:var(--gd);font-weight:400;flex-shrink:0;}
+.qa[open] summary::after{content:'–';}
+.qa p{margin-top:10px;color:var(--muted);font-size:.94rem;line-height:1.6;}
+
+/* INVESTIMENTO */
+.invest{margin-top:30px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;display:grid;grid-template-columns:1fr;gap:24px;}
+@media(min-width:760px){.invest{grid-template-columns:1.1fr .9fr;padding:36px;}}
+.invest ul{list-style:none;margin-top:14px;}
+.invest li{padding:6px 0 6px 24px;position:relative;font-size:.94rem;color:var(--ink);}
+.invest li::before{content:'✓';position:absolute;left:0;color:var(--gd);font-weight:800;}
+.invest-box{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center;}
+.invest-box .lbl{font-size:.8rem;color:var(--muted);font-weight:600;}
+.invest-box .val{font-family:'Bricolage Grotesque';font-size:1.7rem;font-weight:800;color:var(--navy);margin:6px 0 2px;}
+.invest-box .note{font-size:.8rem;color:var(--muted);}
+
+/* CTA FINAL */
+.final{background:linear-gradient(148deg,var(--navy),var(--navy2));border-radius:22px;padding:44px 24px;text-align:center;color:#fff;}
+.final h2{color:#fff;margin:0 auto;}
+.final p{margin:12px auto 24px;color:#c8d8e8;max-width:30rem;}
+.btn-big{font-size:1.06rem;padding:15px 28px;}
+.final .who{margin-top:18px;font-size:.88rem;color:#9db4c9;}
+
+footer{text-align:center;padding:32px 20px 42px;color:#8a99a8;font-size:.84rem;}
+
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease;}
+.reveal.on{opacity:1;transform:none;}
+@media(prefers-reduced-motion:reduce){
+  .reveal,.msg{opacity:1!important;transform:none!important;transition:none!important;}
+  .dot,.typing i{animation:none;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#">DOSE<span>CERTA</span></a>
+    <nav class="nav-links">
+      <a href="#video">Demo</a>
+      <a href="#casos">Casos reais</a>
+      <a href="#como">Como funciona</a>
+      <a href="#investimento">Investimento</a>
+    </nav>
+    <a class="btn" href="https://wa.me/5561982025951?text=Ol%C3%A1%20Bruno!%20Vi%20o%20DoseCerta%20e%20quero%20saber%20mais." target="_blank" rel="noopener">💬 Falar com Bruno</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">✓ Já rodando em 2 clínicas reais</span>
+      <h1>Dose certa, estoque certo, <em>sem paciente esquecido.</em></h1>
+      <p>Sistema que controla <b>cada aplicação, cada sessão e cada mg de estoque</b> — e manda o lembrete pelo WhatsApp automaticamente, sem sua equipe precisar lembrar de nada.</p>
+      <div class="hero-cta">
+        <a class="btn btn-big" href="https://wa.me/5561982025951?text=Ol%C3%A1%20Bruno!%20Quero%20uma%20demonstra%C3%A7%C3%A3o%20do%20DoseCerta." target="_blank" rel="noopener">Quero uma demonstração</a>
+        <a class="btn btn-big btn-ghost" href="#video">▶ Ver demo (2 min)</a>
+      </div>
+      <p class="hint">👇 Lembrete automático chegando no WhatsApp do paciente — sem ninguém digitar nada.</p>
+    </div>
+    <div class="phone">
+      <div class="chat">
+        <div class="chat-top">
+          <div class="av">C</div>
+          <div><div class="nm">Clínica · Lembretes</div><div class="st">online agora</div></div>
+        </div>
+        <div class="msgs" id="msgs">
+          <div class="msg out">Oi, Ana! 🌿 Lembrando que sua próxima dose é amanhã às 10h. Qualquer coisa me chama por aqui.<span class="t">08:00</span></div>
+          <div class="msg in">Ah que bom que lembrou! Vou lá sim 🙌<span class="t">08:03</span></div>
+          <div class="msg out">Perfeito! Também deixo aqui: seu estoque atual é de 5mg restantes — já estamos de olho pra não faltar.<span class="t">08:03</span></div>
+          <div class="msg in">Nossa, muito bom saber disso 😍<span class="t">08:04</span></div>
+          <div class="msg out">✅ Presença confirmada. Até amanhã!<span class="t">08:04</span></div>
+          <div class="typing" id="typing"><i></i><i></i><i></i></div>
+        </div>
+        <div class="chat-note"><span class="dot"></span> Enviado automaticamente pelo sistema — zero digitação manual.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEMA -->
+<section style="padding-top:20px;padding-bottom:48px;">
+  <div class="wrap">
+    <span class="sec-label reveal">O problema de todo protocolo de tratamento contínuo</span>
+    <h2 class="reveal">Papel e planilha não escalam — e cada falha custa dinheiro e paciente.</h2>
+    <div class="probs">
+      <div class="prob reveal">
+        <div class="ico">📄</div>
+        <h3>Ficha de papel se perde</h3>
+        <p>Assinatura em folha solta, pasta que some, letra ilegível. Sem histórico confiável de quem tomou o quê e quando.</p>
+        <span class="sol">Ficha digital + assinatura por botão</span>
+      </div>
+      <div class="prob reveal">
+        <div class="ico">⏰</div>
+        <h3>Paciente esquece a dose</h3>
+        <p>Sem lembrete, o paciente falta, atrasa o protocolo ou aplica errado — e o resultado do tratamento sofre.</p>
+        <span class="sol">Lembrete automático no WhatsApp</span>
+      </div>
+      <div class="prob reveal">
+        <div class="ico">💸</div>
+        <h3>Estoque sem controle</h3>
+        <p>Ninguém sabe ao certo quanto sobrou de cada frasco. Compra a mais, aplica a menos, ou o contrário — prejuízo silencioso.</p>
+        <span class="sol">Saldo em mg/unidade, em tempo real</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANTES/DEPOIS -->
+<section style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <span class="sec-label reveal">Como era vs. como fica</span>
+    <h2 class="reveal">Do formulário de papel ao painel em tempo real.</h2>
+    <p class="sub reveal">Este é o formulário real que uma clínica usava antes de digitalizar o processo — hoje virou tela.</p>
+    <div class="compare">
+      <div class="cmp-card reveal">
+        <div class="cmp-tag bad">✗ Antes — controle em papel</div>
+        <img src="passaporte-papel.jpeg" alt="Formulário de papel para controle de sessões, antes da digitalização">
+        <div class="cmp-foot">Ficha preenchida à mão, sessão por sessão. Fácil de perder, difícil de auditar, impossível de automatizar lembrete.</div>
+      </div>
+      <div class="cmp-card reveal">
+        <div class="cmp-tag good">✓ Depois — painel digital</div>
+        <img src="estoque.png" alt="Painel digital de controle de estoque em tempo real">
+        <div class="cmp-foot">Saldo comprado, aplicado e restante atualizado automaticamente. Nada depende de anotação manual.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VÍDEO DEMO -->
+<section id="video" style="padding-top:48px;">
+  <div class="wrap">
+    <span class="sec-label g reveal">▶ Demonstração real</span>
+    <h2 class="reveal">Veja o sistema funcionando, ao vivo.</h2>
+    <p class="sub reveal">Gravação real de um dos painéis em produção: cadastro com contrato assinado digitalmente, ficha semana a semana e estoque controlado em tempo real.</p>
+    <div class="browser reveal">
+      <div class="browser-bar"><i></i><i></i><i></i><span>painel de controle de tratamento · ao vivo</span></div>
+      <video controls playsinline preload="metadata" poster="poster2.jpg" style="display:block;width:100%;background:#000;">
+        <source src="demo2-synced.mp4" type="video/mp4">
+        <track kind="captions" src="demo2-captions.vtt" srclang="pt" label="Português" default>
+        <a href="demo2-synced.mp4" style="color:#fff;display:block;padding:20px;text-align:center;">Baixar demonstração</a>
+      </video>
+    </div>
+  </div>
+</section>
+
+<!-- CASOS REAIS -->
+<section id="casos" style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <span class="sec-label reveal">Casos reais em produção</span>
+    <h2 class="reveal">O mesmo sistema, funcionando em dois modelos de clínica diferentes.</h2>
+    <p class="sub reveal">Não é protótipo — é o sistema que já roda hoje controlando tratamento de pacientes de verdade.</p>
+    <div class="cases">
+      <div class="case reveal">
+        <div class="tag">Emagrecimento</div>
+        <h3>Clínica ProNutro</h3>
+        <p class="desc">Controle de aplicação e estoque para pacientes em protocolo de Ozempic, Mounjaro e Tirzepatida.</p>
+        <ul>
+          <li>Ficha de evolução semana a semana</li>
+          <li>Assinatura digital de conformidade do paciente</li>
+          <li>Estoque de caneta/frasco em mg, sem planilha</li>
+          <li>Lembrete automático de próxima aplicação</li>
+        </ul>
+        <span class="status">Em produção</span>
+      </div>
+      <div class="case blue reveal">
+        <div class="tag">Estética · Capilar</div>
+        <h3>Dra. Gisele Falcão</h3>
+        <p class="desc">"Passaporte de Tratamento" digital para pacotes de sessão contratados — sem mais papel de controle na pasta.</p>
+        <ul>
+          <li>Quantidade real de sessões do pacote contratado</li>
+          <li>Guia de sessão pendente para cada retorno</li>
+          <li>Trava automática após assinatura de conclusão</li>
+          <li>Aviso de pacote concluído direto no WhatsApp</li>
+        </ul>
+        <span class="status">Em produção</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como">
+  <div class="wrap">
+    <span class="sec-label reveal">Como funciona</span>
+    <h2 class="reveal">Do papel ao sistema rodando no seu WhatsApp.</h2>
+    <div class="steps">
+      <div class="stp reveal"><div class="n">1</div><div><h3>Mapeamos seu protocolo</h3><p>Entendemos o pacote/tratamento, quantas sessões ou doses, e como você controla hoje.</p></div></div>
+      <div class="stp reveal"><div class="n">2</div><div><h3>Configuramos o painel</h3><p>Cadastro de pacientes, contrato de conformidade, ficha semana a semana e estoque próprio da sua clínica.</p></div></div>
+      <div class="stp reveal"><div class="n">3</div><div><h3>Conectamos o WhatsApp</h3><p>Lembretes de próxima dose/sessão saem automaticamente, no número que o paciente já conhece.</p></div></div>
+      <div class="stp reveal"><div class="n">4</div><div><h3>Sua equipe acompanha</h3><p>Tudo organizado em painel: quem já aplicou, quem falta, quanto sobrou de estoque.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENSHOT PACIENTES -->
+<section style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <span class="sec-label reveal">Veja por dentro</span>
+    <h2 class="reveal">O painel que sua equipe usa no dia a dia.</h2>
+    <div class="shots">
+      <div class="reveal">
+        <div style="border-radius:14px;overflow:hidden;box-shadow:0 16px 40px rgba(18,49,78,.16);border:1px solid var(--line);">
+          <img src="pacientes.png" alt="Painel de pacientes em tratamento" style="display:block;width:100%;">
+        </div>
+        <div class="mini-cap">Lista de pacientes em tratamento — nomes ocultados por privacidade (LGPD).</div>
+      </div>
+      <div class="reveal">
+        <div style="border-radius:14px;overflow:hidden;box-shadow:0 16px 40px rgba(18,49,78,.16);border:1px solid var(--line);">
+          <img src="estoque.png" alt="Controle de estoque em tempo real" style="display:block;width:100%;">
+        </div>
+        <div class="mini-cap">Controle de estoque — comprado, aplicado e saldo em tempo real.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INVESTIMENTO -->
+<section id="investimento">
+  <div class="wrap">
+    <span class="sec-label reveal">Investimento</span>
+    <h2 class="reveal">Setup + mensalidade — sem contrato de fidelidade longo.</h2>
+    <div class="invest reveal">
+      <div>
+        <p class="sub" style="margin-top:0;">Cada clínica tem um volume de pacientes e um protocolo diferente, então o valor exato é definido em conversa — mas o modelo é simples:</p>
+        <ul>
+          <li>Setup único: configuração do painel com o seu protocolo</li>
+          <li>Mensalidade fixa: hospedagem, WhatsApp e suporte incluídos</li>
+          <li>Sem taxa por paciente cadastrado</li>
+          <li>Sem trava de contrato longo — cancele quando quiser</li>
+        </ul>
+      </div>
+      <div class="invest-box">
+        <div class="lbl">Proposta</div>
+        <div class="val">Sob medida</div>
+        <div class="note">Fale com a gente e receba um valor fechado em até 24h</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div class="wrap">
+    <span class="sec-label reveal">Perguntas frequentes</span>
+    <h2 class="reveal">Antes de decidir, tire as dúvidas.</h2>
+    <div class="faq">
+      <details class="qa reveal">
+        <summary>Funciona no meu número de WhatsApp atual?</summary>
+        <p>Sim. O paciente continua falando com o mesmo número que já conhece — o sistema só automatiza o envio dos lembretes por trás.</p>
+      </details>
+      <details class="qa reveal">
+        <summary>Serve para qualquer tipo de protocolo, ou só emagrecimento?</summary>
+        <p>Serve para qualquer tratamento contínuo com sessões ou doses contadas — emagrecimento (Ozempic, Mounjaro, Tirzepatida), estética, capilar, fisioterapia. O painel se adapta ao seu pacote.</p>
+      </details>
+      <details class="qa reveal">
+        <summary>É seguro para dados de paciente (LGPD)?</summary>
+        <p>Sim. Os dados ficam em banco próprio com controle de acesso por perfil (admin/funcionário), e nenhuma informação de paciente é exposta publicamente.</p>
+      </details>
+      <details class="qa reveal">
+        <summary>Quanto tempo leva para colocar no ar?</summary>
+        <p>Depende do volume de pacientes e da complexidade do protocolo, mas os dois casos reais acima foram configurados e colocados em produção em poucas semanas.</p>
+      </details>
+      <details class="qa reveal">
+        <summary>Preciso trocar de sistema de agenda ou financeiro?</summary>
+        <p>Não necessariamente — o foco aqui é o controle de dose/sessão e estoque. Podemos integrar com o que você já usa ou incluir módulo financeiro se fizer sentido.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section style="padding-bottom:20px;">
+  <div class="wrap">
+    <div class="final reveal">
+      <h2>Pronto para tirar o controle do papel e da planilha?</h2>
+      <p>Demonstração ao vivo, sem compromisso. Você vê o painel funcionando com o seu protocolo antes de decidir.</p>
+      <a class="btn btn-big" href="https://wa.me/5561982025951?text=Ol%C3%A1%20Bruno!%20Quero%20agendar%20uma%20demonstra%C3%A7%C3%A3o%20do%20DoseCerta." target="_blank" rel="noopener">💬 Falar com Bruno no WhatsApp</a>
+      <div class="who">Bruno Souto · BTech Solution & Growth · (61) 98202-5951 · btechsouto.shop</div>
+    </div>
+  </div>
+</section>
+
+<footer>DoseCerta by BTech Solution & Growth — Tecnologia &amp; Performance · Brasília-DF</footer>
+
+<script>
+(function(){
+  const reduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const msgs=Array.from(document.querySelectorAll('#msgs .msg'));
+  const typing=document.getElementById('typing');
+  if(reduced){msgs.forEach(m=>m.classList.add('show'));return;}
+  let started=false;
+  function play(){
+    msgs.forEach(m=>m.classList.remove('show'));
+    let t=400;
+    msgs.forEach(m=>{
+      if(m.classList.contains('out')){
+        setTimeout(()=>typing.classList.add('show'),t);t+=850;
+        setTimeout(()=>{typing.classList.remove('show');m.classList.add('show');},t);
+      }else{setTimeout(()=>m.classList.add('show'),t);}
+      t+=1050;
+    });
+    setTimeout(play,t+5500);
+  }
+  function start(){if(started)return;started=true;play();}
+  const io=new IntersectionObserver(e=>{if(e[0].isIntersecting){start();io.disconnect();}},{threshold:.05,rootMargin:'0px 0px 200px 0px'});
+  io.observe(document.querySelector('.phone'));
+  setTimeout(start,1500);
+})();
+
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  const io=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting){en.target.classList.add('on');io.unobserve(en.target);}});},{threshold:.12});
+  els.forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>
